@@ -15,3 +15,5 @@ cd client
 npm install (kalo pertama kali)
 npm run watch
 ```
+
+# Kalo ga berubah pas di save, coba hard reload (Ctrl+Shift+R)
