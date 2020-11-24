@@ -48,6 +48,7 @@ button {
 	color: #333;
 	background-color: #f4f4f4;
 	outline: none;
+	cursor: pointer;
 }
 
 button:disabled {
@@ -60,4 +61,14 @@ button:not(:disabled):active {
 
 button:focus {
 	border-color: #666;
+}
+
+.debug {
+	border-color: 1px solid black;
+}
+
+.panel {
+	display: block;
+	background-color: rgb(192, 192, 192);
+	border: 1px solid blue;
 }

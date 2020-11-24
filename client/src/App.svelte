@@ -79,38 +79,11 @@
 		inputBomb = false;
 	}
 
+	import Modal from './components/Modal.svelte'
+	let textInputModal = Modal;
+	let sizeInputModal = Modal;
 	resetGrid();
 </script>
-
-<main>
-	{#if inputBomb}
-		<input type="number" bind:value={nGrid} on:change={resetGrid} min="4" max="10">
-		<p>Grid size: {nGrid}</p>
-		<p>Bombs: {nBombs}</p>
-	{:else}
-		<button on:click={() => {inputBomb = true, resetGrid()}}>Reset</button>
-	{/if}
-	<div class="board">
-		{#each grid as row, i}
-			{#each row as tile, j}
-				<div
-					class="tile"
-					style="grid-row: {i + 1}; grid-column: {j + 1}"
-					class:revealed={tile.revealed}
-					class:bomb={tile.bomb && (tile.revealed || inputBomb)}
-					on:click={() => inputBomb ? toggleBomb(i, j) : dfs(i, j) }
-				>
-					{#if inputBomb || tile.revealed}
-						{tile.cnt ? tile.cnt : ''}
-					{/if}
-				</div>
-			{/each}
-		{/each}
-	</div>
-	{#if inputBomb}
-		<button on:click={endBombInput}>End Bomb Input</button>
-	{/if}
-</main>
 
 <style>
 	@import url("https://fonts.googleapis.com/css?family=Inconsolata");
@@ -163,3 +136,46 @@
 		}
 	}
 </style>
+
+<main style="display: grid; height: 100vh;">
+	<div style="height: fit-content; margin: auto;" class="panel">
+		<div>
+			{#if inputBomb}
+				<button on:click={sizeInputModal.open}>Change size</button>
+				<Modal title="Change grid size" bind:this={sizeInputModal}>
+					<input type="number" bind:value={nGrid} on:change={resetGrid} min="4" max="10" style="width: 100%;">
+				</Modal>
+
+				<p>Grid size: {nGrid}</p>
+				<p>Bombs: {nBombs}</p>
+				<button on:click={textInputModal.open}>Input config by text</button>
+				<Modal title="Input by text" bind:this={textInputModal}>
+					<div style="display: grid; background: red;">
+						<textarea name="textinput" id="" cols="30" rows="15" style="display: block; resize: none;"></textarea>
+						<button on:click={textInputModal.close}>Apply Input</button>
+					</div>
+				</Modal>
+				<button on:click={endBombInput}>End Bomb Input</button>
+			{:else}
+				<button on:click={() => {inputBomb = true, resetGrid()}}>Reset</button>
+			{/if}
+		</div>
+		<div class="board">
+			{#each grid as row, i}
+				{#each row as tile, j}
+					<div
+						class="tile"
+						style="grid-row: {i + 1}; grid-column: {j + 1}"
+						class:revealed={tile.revealed}
+						class:bomb={tile.bomb && (tile.revealed || inputBomb)}
+						on:click={() => inputBomb ? toggleBomb(i, j) : dfs(i, j) }
+					>
+						{#if inputBomb || tile.revealed}
+							{tile.cnt ? tile.cnt : ''}
+						{/if}
+					</div>
+				{/each}
+			{/each}
+		</div>
+	</div>
+</main>
