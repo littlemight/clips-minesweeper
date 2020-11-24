@@ -6,6 +6,7 @@ html, body {
 
 body {
 	color: #333;
+	background: darkcyan;
 	margin: 0;
 	padding: 8px;
 	box-sizing: border-box;
@@ -69,6 +70,7 @@ button:focus {
 
 .panel {
 	display: block;
-	background-color: rgb(192, 192, 192);
 	border: 1px solid blue;
+	background: #fff;
+	padding: 1rem;
 }
