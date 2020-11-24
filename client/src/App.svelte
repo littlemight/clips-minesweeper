@@ -23,7 +23,6 @@
 				}
 			}
 		}
-		grids.push(JSON.parse(JSON.stringify(curGrid)));
 	}
 	
 	const toggleBomb = (i, j) => {
@@ -95,6 +94,7 @@
 	
 	const endBombInput = () => {
 		inputBomb = false;
+		grids.push(JSON.parse(JSON.stringify(curGrid)));
 	}
 
 	const prevState = () => {
