@@ -1,3 +1,5 @@
+// Experiment
+
 #include <bits/stdc++.h>
 
 
@@ -257,4 +259,9 @@ contoh input:
 5, 6
 6, 2
 7, 8
+contoh input:
+3
+2
+0, 2
+2, 0
 */
