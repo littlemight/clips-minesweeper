@@ -2,7 +2,7 @@
 ## Server Python
 Masuk virtual environment (ini kalo di windows)
 ```
-.\env\Scripts\activate
+.\env\Scripts\activate.bat
 python app.py
 ```
 Keluar virtual environment
