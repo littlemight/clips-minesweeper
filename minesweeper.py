@@ -33,9 +33,10 @@ env = clips.Environment()
 def setup_env():
     env.reset()
     env.clear() 
-    template_index = ''
+    template_index = '-1'
     for i in range(board.size):
         template_index += ' ' + str(i)
+    template_index += ' -1'
 
     template_string = """
         (deftemplate bomb-pos
@@ -73,6 +74,20 @@ def setup_env():
         )
     """
     env.build(template_string)
+    template_string = """
+        (deftemplate bomb-at
+            (slot x (type NUMBER))
+            (slot y (type NUMBER))
+        )
+    """
+    env.build(template_string)
+    template_string = """
+        (deftemplate safe-at
+            (slot x (type NUMBER))
+            (slot y (type NUMBER))
+        )
+    """
+    env.build(template_string)
     
 
     template_string = '(index-x ' + template_index + ')'
@@ -105,6 +120,70 @@ def setup_env():
             (test (eq ?val (count_bomb ?x ?y)))
         =>
             (assert (is-safe-around (x ?x) (y ?y)))
+        )
+    """
+    env.build(rule)
+    rule = """
+        (defrule mark-bomb
+            (index-x $? ?ax ?x ?bx $?)
+            (index-y $? ?ay ?y ?by $?)
+            (empty-slot (x ?x) (y ?y))
+            (or 
+                (or
+                    (or
+                        (is-unsafe-around (x ?ax) (y ?ay))
+                        (is-unsafe-around (x ?ax) (y ?y))
+                    )
+                    (or
+                        (is-unsafe-around (x ?ax) (y ?by))
+                        (is-unsafe-around (x ?x) (y ?ay))
+                    )
+                )
+                (or
+                    (or
+                        (is-unsafe-around (x ?x) (y ?by))
+                        (is-unsafe-around (x ?bx) (y ?ay))
+                    )
+                    (or
+                        (is-unsafe-around (x ?bx) (y ?y))
+                        (is-unsafe-around (x ?bx) (y ?by))
+                    )
+                )
+            )
+        =>
+            (assert (bomb-at (x ?x) (y ?y)))
+        )
+    """
+    env.build(rule)
+    rule = """
+        (defrule mark-safe
+            (index-x $? ?ax ?x ?bx $?)
+            (index-y $? ?ay ?y ?by $?)
+            (empty-slot (x ?x) (y ?y))
+            (or 
+                (or
+                    (or
+                        (is-safe-around (x ?ax) (y ?ay))
+                        (is-safe-around (x ?ax) (y ?y))
+                    )
+                    (or
+                        (is-safe-around (x ?ax) (y ?by))
+                        (is-safe-around (x ?x) (y ?ay))
+                    )
+                )
+                (or
+                    (or
+                        (is-safe-around (x ?x) (y ?by))
+                        (is-safe-around (x ?bx) (y ?ay))
+                    )
+                    (or
+                        (is-safe-around (x ?bx) (y ?y))
+                        (is-safe-around (x ?bx) (y ?by))
+                    )
+                )
+            )
+        =>
+            (assert (safe-at (x ?x) (y ?y)))
         )
     """
     env.build(rule)
@@ -167,39 +246,40 @@ def find_bomb():
         strfact = str(fact).replace('(', ' ').replace(')', ' ')
         words = strfact.split(' ')
 
-        unsafe = False
+        bomb = False
         safe = False
         val = []
         bef = ''
         for word in words:
-            if (word == "is-unsafe-around"):
-                unsafe = True
-            elif (word == "is-safe-around"):
+            if (word == "bomb-at"):
+                bomb = True
+            elif (word == "safe-at"):
                 safe = True
-            if (unsafe or safe):
+            if (bomb or safe):
                 if (bef == 'x' or bef == 'y'):
                     val.append(int(word))
             bef = word
-        if (safe or unsafe):
-            # print(unsafe, end=' ')
-            # print(str(val[0]) + ", " + str(val[1]))
-            for ni, nj in board.adjList[val[0]][val[1]]:
-                if (board.board[ni][nj] != -2):
-                    continue
-                board.make_assert(ni, nj, unsafe)
+        if (safe or bomb):
+            if (board.board[val[0]][val[1]] == Constant.UNDEF):
+                board.make_assert(val[0], val[1], bomb)
 
 if __name__ == "__main__":
     print(f'KONDISI AWAL \n{board.to_string()}')
     step = 0
-    while (len(board.bombFound) < board.bombCnt):
+    while (len(board.bombFound) < board.bombCnt and step < 101):
         try:
             if (step == 0):
                 board.make_assert(0, 0, 0)
             else:
-                    find_bomb()
+                find_bomb()
             step += 1
             print(f'SETELAH STEP {step}\n{board.to_string()}')
         except Exception as e:
-            print('euy')
+            print('Error:', e)
+            step += 1
 
+    if (len(board.bombFound) == board.bombCnt):
+        print('SELURUH BOMB BERHASIL DITEMUKAN!!')
+    else:
+        print('TIDAK SEMUA BOMB BERHASIL DITEMUKAN.')
     print(f'DISELESAIKAN DALAM: {step} step')
