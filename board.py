@@ -61,12 +61,7 @@ class Board():
     def to_string(self):
         ret = ''
         for i in range(self.size):
-            for j in range(self.size):
-                ret += str(self.board[i][j])
-                if (j < self.size - 1):
-                    ret += ' '
-                else:
-                    ret += '\n'
+            ret += ''.join(f'{x:3}' for x in self.board[i]) + '\n'
         return ret
     
     # prekondisi: posisi (i, j) bukan tempat bomb

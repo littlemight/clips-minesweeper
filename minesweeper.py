@@ -180,7 +180,10 @@ while (len(board.bombFound) < board.bombCnt):
     if (step == 0):
         board.make_assert(0, 0, 0)
     else:
-        find_bomb()
+        try:
+            find_bomb()
+        except Exception as e:
+            print(e)
     step += 1
     print(f'SETELAH STEP {step}\n{board.to_string()}')
 
