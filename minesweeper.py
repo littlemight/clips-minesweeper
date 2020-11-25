@@ -54,12 +54,7 @@ class Board():
     def to_string(self):
         ret = ''
         for i in range(self.size):
-            for j in range(self.size):
-                ret += str(self.board[i][j])
-                if (j < self.size - 1):
-                    ret += ' '
-                else:
-                    ret += '\n'
+            ret += ''.join(f'{x:3}' for x in self.board[i]) + '\n'
         return ret
     
     # prekondisi: posisi (i, j) bukan tempat bomb
@@ -94,14 +89,11 @@ class Board():
 
 
 # *** MAIN PROGRAM ***
-
 n = int(input())
 bombCnt = int(input())
 bombPos = []
 for i in range(bombCnt):
-    x, y = input().split(',')
-    x = int(x)
-    y = int(y)
+    x, y = [int(a) for a in input().split(',')]
     bombPos.append((x, y))
 
 board = Board(n, bombCnt, bombPos)
@@ -138,10 +130,10 @@ def find_bomb():
     env = clips.Environment()
     env.reset()
     env.clear()
-    template_index = '-1'
+    template_index = ''
     for i in range(board.size):
         template_index += ' ' + str(i)
-    template_index += ' -1'
+
     template_string = """
         (deftemplate bomb-pos
             (slot x (type NUMBER))
@@ -239,8 +231,18 @@ def find_bomb():
             new_fact['y'] = j
             new_fact['val'] = board.board[i][j]
             new_fact.assertit()
-
+        
+    # for fact in env.facts():
+    #     print(fact)
     env.run()
+    
+    # activation = tuple(env.activations())
+    # print(activation)
+    # for fact in env.facts():
+    #     print(fact)
+    # import sys
+    # sys.exit(0)
+    
     for fact in env.facts():
         strfact = str(fact).replace('(', ' ').replace(')', ' ')
         words = strfact.split(' ')
@@ -271,7 +273,7 @@ def find_bomb():
 
 
 
-print("KONDISI AWAL \n" + board.to_string())
+print(f'KONDISI AWAL \n{board.to_string()}')
 
 step = 0
 while (len(board.bombFound) < board.bombCnt):
@@ -280,6 +282,6 @@ while (len(board.bombFound) < board.bombCnt):
     else:
         find_bomb()
     step += 1
-    print("SETELAH STEP " + str(step) + '\n' + board.to_string())
+    print(f'SETELAH STEP {step}\n{board.to_string()}')
 
-print("DISELESAIKAN DALAM: " + str(step) + " step")
+print(f'DISELESAIKAN DALAM: {step} step')
