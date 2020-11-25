@@ -140,7 +140,28 @@ def find_bomb():
             new_fact['val'] = board.board[i][j]
             new_fact.assertit()
         
+    # Get activations
+    activations = tuple(env.activations())
+    # print('Conflict Set')
+    # for act in activations:
+    #     print(act)
+    print(f'Activated Rule: {activations[0]}')
+    stract = str(activations[0])
+    rule_name, facts_id = stract.split(' ')[6:]
+    rule_name = rule_name[:-1]
+    facts_id = facts_id.split(',')
+    # print(rule_name, facts_id)
+    
+    fax = tuple(env.facts())
+    fax = [x for x in fax if f'f-{x.index}' in facts_id]
+    print('LHS:')
+    for f in fax:
+        # print(type(f))
+        print(f'\t{f}')
+        # print(str(f))
+
     env.run()
+
     
     for fact in env.facts():
         strfact = str(fact).replace('(', ' ').replace(')', ' ')

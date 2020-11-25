@@ -58,10 +58,19 @@ class Board():
     def in_range(self, i, j):
         return 0 <= i < self.size and 0 <= j < self.size
 
+    def val2char(self, val):
+        if (val == -1):
+            return 'V'
+        elif (val == -2):
+            return 'X'
+        else:
+            return val
+
     def to_string(self):
         ret = ''
         for i in range(self.size):
-            ret += ''.join(f'{x:3}' for x in self.board[i]) + '\n'
+            # ret += ''.join(f'{x:3}' for x in self.board[i]) + '\n'
+            ret += ''.join(f'  {self.val2char(x)}' for x in self.board[i]) + '\n'
         return ret
     
     # prekondisi: posisi (i, j) bukan tempat bomb
