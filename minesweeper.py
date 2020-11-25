@@ -169,7 +169,7 @@ def find_bomb():
 print("KONDISI AWAL \n" + board.to_string())
 
 step = 0
-while (len(board.bombFound) < board.bombCnt and step < 10):
+while (len(board.bombFound) < board.bombCnt):
     if (step == 0):
         board.make_assert(0, 0, 0)
     else:
