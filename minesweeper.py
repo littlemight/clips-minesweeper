@@ -28,10 +28,11 @@ def count_slot(i, j):
             ret += 1
     return ret
 
-def find_bomb():
-    env = clips.Environment()
+env = clips.Environment()
+
+def setup_env():
     env.reset()
-    env.clear()
+    env.clear() 
     template_index = ''
     for i in range(board.size):
         template_index += ' ' + str(i)
@@ -107,6 +108,9 @@ def find_bomb():
         )
     """
     env.build(rule)
+    
+def find_bomb():
+    setup_env()
 
     template = env.find_template('bomb-pos')
     for x in board.bombFound:
@@ -136,16 +140,7 @@ def find_bomb():
             new_fact['val'] = board.board[i][j]
             new_fact.assertit()
         
-    # for fact in env.facts():
-    #     print(fact)
     env.run()
-    
-    # activation = tuple(env.activations())
-    # print(activation)
-    # for fact in env.facts():
-    #     print(fact)
-    # import sys
-    # sys.exit(0)
     
     for fact in env.facts():
         strfact = str(fact).replace('(', ' ').replace(')', ' ')
@@ -172,19 +167,18 @@ def find_bomb():
                     continue
                 board.make_assert(ni, nj, unsafe)
 
-
-print(f'KONDISI AWAL \n{board.to_string()}')
-
-step = 0
-while (len(board.bombFound) < board.bombCnt):
-    if (step == 0):
-        board.make_assert(0, 0, 0)
-    else:
+if __name__ == "__main__":
+    print(f'KONDISI AWAL \n{board.to_string()}')
+    step = 0
+    while (len(board.bombFound) < board.bombCnt):
         try:
-            find_bomb()
+            if (step == 0):
+                board.make_assert(0, 0, 0)
+            else:
+                    find_bomb()
+            step += 1
+            print(f'SETELAH STEP {step}\n{board.to_string()}')
         except Exception as e:
-            print(e)
-    step += 1
-    print(f'SETELAH STEP {step}\n{board.to_string()}')
+            print('euy')
 
-print(f'DISELESAIKAN DALAM: {step} step')
+    print(f'DISELESAIKAN DALAM: {step} step')

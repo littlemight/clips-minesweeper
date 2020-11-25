@@ -1,0 +1,1 @@
+python minesweeper.py < test/example.in
