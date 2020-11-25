@@ -1,97 +1,8 @@
 import clips
-import constant
 import os
 import re
+from board import Board
 from constant import Constant, is_bomb, is_safe, is_undef
-
-class Board():
-    """
-        Board permainan berada di atribut board.
-        Nilai pada board[i][j] merepresentasikan state pada sel.
-            -2 = unknown/undef
-            -1 = flagged
-            0, 1, 2, 3, 4 = safe cell
-
-        endState merepresentasikan board jika permainan selesai, dan
-        atribut ini digunakan untuk menyimpan hasil precompute.
-    """
-    def __init__(self, size, bombCnt, bomb):
-        self.size = size
-        self.bombCnt = bombCnt
-        self.board = []
-        self.endState = [ [0] * size for i in range(size) ]
-        for i in range(size):
-            temp = []
-            for j in range(size):
-                temp.append(Constant.UNDEF)
-            self.board.append(temp)
-
-        self.bombPos = []
-        for x in bomb:
-            self.bombPos.append(x)
-            self.endState[x[0]][x[1]] = Constant.BOMB
-
-        for i in range(size):
-            for j in range(size):
-                if (self.endState[i][j] == Constant.BOMB):
-                    continue
-                for deli in range(-1, 2):
-                    for delj in range(-1, 2):
-                        ni = i + deli
-                        nj = j + delj
-                        if (i == ni and j == nj):
-                            continue
-                        if (not self.in_range(ni, nj)):
-                            continue
-                        if (self.endState[ni][nj] == Constant.BOMB):
-                            self.endState[i][j] += 1
-
-        self.bombFound = []
-
-    def in_range(self, i, j):
-        return 0 <= i < self.size and 0 <= j < self.size
-
-    def to_string(self):
-        ret = ''
-        for i in range(self.size):
-            for j in range(self.size):
-                ret += str(self.board[i][j])
-                if (j < self.size - 1):
-                    ret += ' '
-                else:
-                    ret += '\n'
-        return ret
-    
-    # prekondisi: posisi (i, j) bukan tempat bomb
-    def dfs_board(self, i, j):
-        assert(self.endState[i][j] != Constant.BOMB)
-        self.board[i][j] = self.endState[i][j]
-        if (self.board[i][j] != 0):
-            return
-        for deli in range(-1, 2):
-            for delj in range(-1, 2):
-                if (deli == 0 and delj == 0):
-                    continue
-                ni = i + deli
-                nj = j + delj
-                if (not self.in_range(ni, nj)):
-                    continue
-                if (self.board[ni][nj] != -2):
-                    continue
-
-                self.dfs_board(ni, nj)
-    
-    # digunakan untuk menaruh flag atau menekan sel yang dianggap aman pada sel (i, j)
-    # jika ingin menaruh bom -> putbomb = True
-    def make_assert(self, i, j, putbomb):
-        if (putbomb):
-            assert(self.endState[i][j] == Constant.BOMB)
-            self.board[i][j] = Constant.BOMB
-            self.bombFound.append((i, j))
-        else:
-            self.dfs_board(i, j)
-
-
 
 # *** MAIN PROGRAM ***
 
@@ -108,30 +19,16 @@ board = Board(n, bombCnt, bombPos)
 
 def count_bomb(i, j):
     ret = 0
-    for deli in range(-1, 2):
-        for delj in range(-1, 2):
-            if (i == 0 and j == 0):
-                continue
-            ni = i + deli
-            nj = j + delj
-            if (not board.in_range(ni, nj)):
-                continue
-            if (board.board[ni][nj] == Constant.BOMB):
-                ret += 1
+    for ni, nj in board.adjList[i][j]:
+        if (board.board[ni][nj] == Constant.BOMB):
+            ret += 1
     return ret
 
 def count_slot(i, j):
     ret = 0
-    for deli in range(-1, 2):
-        for delj in range(-1, 2):
-            if (i == 0 and j == 0):
-                continue
-            ni = i + deli
-            nj = j + delj
-            if (not board.in_range(ni, nj)):
-                continue
-            if (board.board[ni][nj] == Constant.UNDEF):
-                ret += 1
+    for ni, nj in board.adjList[i][j]:
+        if (board.board[ni][nj] == Constant.UNDEF):
+            ret += 1
     return ret
 
 def find_bomb():
@@ -194,6 +91,7 @@ def find_bomb():
             (index-x $? ?x $?)
             (index-y $? ?y $?)
             (safe-pos (x ?x) (y ?y) (val ?val))
+            (test (> (count_slot ?x ?y) 0))
             (test (eq ?val (+ (count_bomb ?x ?y) (count_slot ?x ?y))))
         =>
             (assert (is-unsafe-around (x ?x) (y ?y)))
@@ -205,6 +103,7 @@ def find_bomb():
             (index-x $? ?x $?)
             (index-y $? ?y $?)
             (safe-pos (x ?x) (y ?y) (val ?val))
+            (test (> (count_slot ?x ?y) 0))
             (test (eq ?val (count_bomb ?x ?y)))
         =>
             (assert (is-safe-around (x ?x) (y ?y)))
@@ -259,22 +158,18 @@ def find_bomb():
                     val.append(int(word))
             bef = word
         if (safe or unsafe):
-            for i in range(-1, 2):
-                for j in range(-1, 2):
-                    if (i == 0 or j == 0):
-                        continue
-                    ni = val[0] + i
-                    nj = val[1] + j
-                    if ((not board.in_range(ni, nj)) or board.board[ni][nj] != -2):
-                        continue
-                    board.make_assert(ni, nj, unsafe)
-
+            # print(unsafe, end=' ')
+            # print(str(val[0]) + ", " + str(val[1]))
+            for ni, nj in board.adjList[val[0]][val[1]]:
+                if (board.board[ni][nj] != -2):
+                    continue
+                board.make_assert(ni, nj, unsafe)
 
 
 print("KONDISI AWAL \n" + board.to_string())
 
 step = 0
-while (len(board.bombFound) < board.bombCnt):
+while (len(board.bombFound) < board.bombCnt and step < 10):
     if (step == 0):
         board.make_assert(0, 0, 0)
     else:
