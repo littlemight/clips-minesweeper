@@ -44,6 +44,7 @@ class Board():
                         if (self.in_range(ni, nj)):
                             temp.append((ni, nj))
                 self.adjList[i][j] = temp
+        # self.print_2d(self.adjList)
 
         for i in range(size):
             for j in range(size):
@@ -94,3 +95,15 @@ class Board():
             self.bombFound.append((i, j))
         else:
             self.dfs_board(i, j)
+
+    def print_2d(self, param):
+        for row in param:
+            for col in row:
+                print(col)
+
+
+def main():
+    board = Board(3, 0, [(1, 1),(2, 0),(2, 2)])
+
+main()
+    

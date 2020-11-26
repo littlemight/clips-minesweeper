@@ -6,14 +6,18 @@ from bruteforce import Bruteforce
 from constant import Constant, is_bomb, is_safe, is_undef
 
 # *** MAIN PROGRAM ***
-n = int(input())
-bombCnt = int(input())
-bombPos = []
-for i in range(bombCnt):
-    x, y = [int(a) for a in input().split(',')]
-    bombPos.append((x, y))
+# n = int(input())
+# bombCnt = int(input())
+# bombPos = []
+# for i in range(bombCnt):
+#     x, y = [int(a) for a in input().split(',')]
+#     bombPos.append((x, y))
 
-board = Board(n, bombCnt, bombPos)
+# board = Board(n, bombCnt, bombPos)
+n = 4
+bombCnt = 3
+bombPos = [(3,1),(2,3),(3,3)]
+board = Board(n,bombCnt,bombPos)
 
 def count_bomb(i, j):
     ret = 0
@@ -38,7 +42,8 @@ def setup_env():
     for i in range(board.size):
         template_index += ' ' + str(i)
     template_index += ' -1'
-
+    
+    print(template_index)
     template_string = '(index-x ' + template_index + ')'
     env.assert_string(template_string)
 

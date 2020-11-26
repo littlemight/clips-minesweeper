@@ -24,7 +24,7 @@
 			}
 		}
 	}
-	
+
 	const toggleBomb = (i, j) => {
 		if (!curGrid[i][j].bomb) nBombs++;
 		else nBombs--;
