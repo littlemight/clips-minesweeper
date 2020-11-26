@@ -1,6 +1,7 @@
 <script>
     export let title;
     export let isOpen = false;
+    export let backdropClickable = true;
     export const open = () => {
         isOpen = true;
     }
@@ -36,5 +37,5 @@
         <button on:click={close}>X</button>
         <slot />
     </div>
-    <div class="backdrop" on:click={close} />
+    <div class="backdrop" on:click={backdropClickable ? close : {}} />
 {/if}
