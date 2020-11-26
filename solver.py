@@ -67,6 +67,9 @@ class MinesweeperSolver():
                 )
             """
             env.build(rule)
+
+            for rule in tuple(env.rules()):
+                rule.watch_firings = True
             
         def find_bomb():
             setup_env()
@@ -189,6 +192,7 @@ class MinesweeperSolver():
             print('TIDAK SEMUA BOMB BERHASIL DITEMUKAN.')
         print(f'DISELESAIKAN DALAM: {step} step')
 
+        print(f'Moves\n{ret_move}')
         return (ret_move, ret_agenda)
 
 if __name__ == '__main__':

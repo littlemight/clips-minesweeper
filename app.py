@@ -1,4 +1,5 @@
-from flask import Flask, send_from_directory
+from flask import Flask, send_from_directory, request, jsonify
+from solver import MinesweeperSolver
 import random
 import json
 
@@ -14,21 +15,23 @@ def base():
 def home(path):
     return send_from_directory('client/public', path)
 
-@app.route("/rand")
-def hello():
-    return str(random.randint(0, 100))
+solver = None
 
-# Answering request
-@app.route('/solve',methods = ['POST'])
-def login():
-    config = json.loads(request.post.boardConfig)
-    data = 
-    response = app.response_class(
-        response=json.dumps(data),
-        status=200,
-        mimetype='application/json'
-    )
-    return response
+import json
+
+@app.route('/initSolver', methods = ['POST'])
+def initSolver():
+    # solver = MinesweeperSolver
+    # nGrid, nBombs, bombPos = request.json
+    json = request.json
+    nGrid = json['nGrid']
+    nBombs = json['nBombs']
+    bombPos = [(v['x'], v['y']) for v in json['bombPos']]
+    solver = MinesweeperSolver(nGrid, nBombs, bombPos)
+    print(nGrid, nBombs, bombPos)
+    ret = solver.solve()
+    print(ret)
+    return jsonify(ret)
 
 if __name__ == "__main__":
     app.run(debug=True)

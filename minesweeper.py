@@ -221,22 +221,21 @@ def find_bomb():
         
     # Get activations
     activations = tuple(env.activations())
-    # print('Conflict Set')
-    # for act in activations:
-    #     print(act)
-    print(f'Activated Rule: {activations[0]}')
-    stract = str(activations[0])
-    rule_name, facts_id = stract.split(' ')[6:]
-    rule_name = rule_name[:-1]
-    facts_id = facts_id.split(',')
-    # print(rule_name, facts_id)
+    i = 1
+    for act in activations:
+        print(f'{i} Activated Rule: {act}')
+        i += 1
+        # stract = str(activations[0])
+        # rule_name, facts_id = stract.split(' ')[6:]
+        # rule_name = rule_name[:-1]
+        # facts_id = facts_id.split(',')
+        # # print(rule_name, facts_id)
     
-    fax = tuple(env.facts())
-    fax = [x for x in fax if f'f-{x.index}' in facts_id]
-    print('LHS:')
-    for f in fax:
-        # print(type(f))
-        print(f'\t{f}')
+        # fax = [x for x in fax if f'f-{x.index}' in facts_id]
+        # print('LHS:')
+        # for f in fax:
+        #     # print(type(f))
+        #     print(f'\t{f}')
         # print(str(f))
 
     env.run()
