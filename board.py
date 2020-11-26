@@ -94,3 +94,4 @@ class Board():
             self.bombFound.append((i, j))
         else:
             self.dfs_board(i, j)
+        return (i, j)
