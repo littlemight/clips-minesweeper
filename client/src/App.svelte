@@ -159,6 +159,7 @@
 				startGrid = JSON.parse(JSON.stringify(curGrid));
 				inputBomb = false;
 				waiting = false;
+				console.log(facts);
 			}
 		);
 	}
@@ -187,7 +188,6 @@
 		if (step + 1 < moves.length) {
 			step++;
 			simulateStep(step);
-			// Show final facts after first click
 		}
 	}
 
@@ -229,8 +229,8 @@
 	}
 
 	.tile-small{
-		height: 30px;
-		width: 30px;
+		height: 35px;
+		width: 35px;
 	}
 
 	.bomb:before {
@@ -241,6 +241,11 @@
 		width: 25px;
 		height: 25px;
 		border-radius: 50%;
+	}
+
+	.bomb-small:before{
+		width: 17px;
+		height: 17px;
 	}
 
 	.revealed {
@@ -254,10 +259,14 @@
 	.info-container{
 		background-color: #fff;
 		border: 1px solid black;
-		min-width: 25%;
+		width: 25%;
 		height:100px;
 		min-height: 80%;
 		margin: auto 20px;
+	}
+	.f-container, .a-container {
+		overflow: scroll;
+		max-width: 25%;
 	}
 
 	.board-container{
@@ -268,28 +277,28 @@
 			max-width: none;
 		}
 	}
+	ol{
+		text-align: left;
+	}
 </style>
 
 <main style="display: grid; height: 100vh;">
 	<div class="container" style="display: flex; flex-direction: row; justify-content:center">
-		<div class="info-container">
+		<div class="info-container f-container">
 			<h3>Final Facts</h3>
+			<!-- splice 2 to remove 'empty' and 'intial fact' -->
 			{#if !inputBomb && !waiting}
 				<ol>
-					{#each facts as fact}
+					{#each (facts.splice(2)) as fact}  
 					<li>
 						{fact}
 					</li>
 					{/each}
 				</ol>
 			{/if}
-			<!-- <textarea id="fact" name="Facts" cols="30" rows="10"
-				placeholder="Facts"
-				style="resize: none;"
-			></textarea> -->
 		</div>
 		<!-- <div style="margin: auto;" class="panel minesweeper"> -->
-		<div class="info-container minesweeper" style="min-width: 40% min-height: max-content">
+		<div class="info-container minesweeper" style="min-width: 40%  min-height: max-content">
 			{#if waiting}
 				<p>Waiting clips result...</p>
 			{/if}
@@ -332,6 +341,7 @@
 							class:revealed={tile.revealed}
 							class:flagged={tile.flagged}
 							class:bomb={tile.bomb && (tile.revealed || inputBomb)}
+							class:bomb-small= {nGrid > 7}
 							on:click={() => inputBomb ? toggleBomb(i, j) : reveal(i, j) }
 						>
 							{#if inputBomb || tile.revealed}
@@ -342,14 +352,14 @@
 				{/each}
 			</div>
 		</div>
-		<div class="info-container">
+		<div class="info-container a-container">
 			<h3>Agenda</h3>
 			{#if !inputBomb && !waiting}
 			<ol>
-				{#each agendas as agenda}
-				<li>
-					{agenda}
-				</li>
+				{#each (agendas.splice(1)) as agenda}
+					<li>
+						{agenda}
+					</li>
 				{/each}
 			</ol>
 		{/if}
