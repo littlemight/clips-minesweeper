@@ -5,26 +5,30 @@
 	let nGrid = 4;
 	let nBombs = 0;
 	let bombsFound = 0;
-	let gameStatus = 0; // 0 lagi main, 1 menang, 2 kalah
+
+	const ONGOING = 0;
+	const WIN = 1;
+	const LOSE = 2 
+	let gameStatus = ONGOING;
 	
-	let moves, agendas;
+	let moves, agendas,facts;
 	// moves stores array of (x, y, clickBomb) made by CLIPS
 	// agendas stores.... the agenda.
 
 	let inputBomb = true, waiting = false;
 
-	const resetGrid = () => {
-		if (nGrid > 10) nGrid = 10;
-		else if (nGrid < 4) nGrid = 4;
+	const resetGrid = (size=4) => {
+		if (size > 10) nGrid = 10;
+		else if (size < 4) nGrid = 4;
 		nBombs = 0;
 		bombsFound = 0;
 		curGrid = [];
 		moves = agendas = [];
 		step = 0;
-		gameStatus = 0;
-		for (let i = 0; i < nGrid; i++) {
-			curGrid[i] = new Array(nGrid);
-			for (let j = 0; j < nGrid; j++) {
+		gameStatus = ONGOING;
+		for (let i = 0; i < size; i++) {
+			curGrid[i] = new Array(size);
+			for (let j = 0; j < size; j++) {
 				curGrid[i][j] = {
 					bomb: false,
 					revealed: false,
@@ -47,14 +51,13 @@
 		const ret = {
 			nGrid, nBombs, bombPos
 		}
-		console.log(ret);
 		return ret;
 	}
 
 	const processConfig = () => {
 		let configInput = document.getElementsByName("configInput")[0].value.split('\n');
 		nGrid = parseInt(configInput[0])
-		resetGrid(); // ubah reset grid buat nerima parameter aja nanti
+		resetGrid(nGrid);
 		nBombs = parseInt(configInput[1])
 
 		for (let i = 2; i - 2 < nBombs; i++) {
@@ -72,9 +75,7 @@
 	}
 
 	const reveal = (i, j) => {
-		console.log(i, j)
 		if (curGrid[i][j].revealed) {
-			console.log('udah di reveal lur');
 			return;
 		}
 		if (curGrid[i][j].bomb) {
@@ -85,7 +86,7 @@
 					}
 				}
 			}
-			gameStatus = 2;
+			gameStatus = LOSE;
 			return;
 		}
 		dfs(i, j);
@@ -96,12 +97,12 @@
 		curGrid[i][j].flagged = true;
 		if (curGrid[i][j].bomb) {
 			bombsFound++;
-			console.log(bombsFound, nBombs)
 			if (bombsFound == nBombs) {
-				gameStatus = 1;
+				gameStatus = WIN;
 			}
 		}
 	}
+
 	
 	const dfs = (i, j) => {
 		curGrid[i][j].revealed = true;
@@ -152,11 +153,9 @@
 			res => res.json()
 		).then(
 			res => {
-				console.log(typeof res);
 				moves = [[-1, -1, 0], ...res[0]];
 				agendas = ['Empty', ...res[1]];
-				console.log(moves);
-				console.log(agendas);
+				facts = ['Empty',...res[2]];
 				startGrid = JSON.parse(JSON.stringify(curGrid));
 				inputBomb = false;
 				waiting = false;
@@ -170,10 +169,9 @@
 		if (step == 0) return;
 		for (let i = 1; i <= step; i++) {
 			if (moves[i][2]) {
-				// Flag bomb
-				flag(moves[i][0], moves[i][1])
+				flag(moves[i][0], moves[i][1]);
 			} else {
-				reveal(moves[i][0], moves[i][1])
+				reveal(moves[i][0], moves[i][1]);
 			}
 		}
 	}
@@ -189,6 +187,7 @@
 		if (step + 1 < moves.length) {
 			step++;
 			simulateStep(step);
+			// Show final facts after first click
 		}
 	}
 
@@ -196,7 +195,7 @@
 	let textInputModal = Modal;
 	let sizeInputModal = Modal;
 	let gameFinishedModal = Modal;
-	resetGrid();
+	resetGrid();//size parameter default = 4
 </script>
 
 <style>
@@ -229,6 +228,11 @@
 		cursor: pointer;
 	}
 
+	.tile-small{
+		height: 30px;
+		width: 30px;
+	}
+
 	.bomb:before {
 		content: '';
 		background: #000;
@@ -247,7 +251,18 @@
 	.flagged {
 		background: pink;
 	}
+	.info-container{
+		background-color: #fff;
+		border: 1px solid black;
+		min-width: 25%;
+		height:100px;
+		min-height: 80%;
+		margin: auto 20px;
+	}
 
+	.board-container{
+		margin: 20px 0px;
+	}
 	@media (min-width: 640px) {
 		main {
 			max-width: none;
@@ -256,23 +271,33 @@
 </style>
 
 <main style="display: grid; height: 100vh;">
-	<div class="container" style="display: flex; flex-direction: row;">
-		<div class="euy" style="margin: auto;">
-			<textarea name="Facts" cols="30" rows="10"
-				placeholder="F1 euy
-				F2 euy"
+	<div class="container" style="display: flex; flex-direction: row; justify-content:center">
+		<div class="info-container">
+			<h3>Final Facts</h3>
+			{#if !inputBomb && !waiting}
+				<ol>
+					{#each facts as fact}
+					<li>
+						{fact}
+					</li>
+					{/each}
+				</ol>
+			{/if}
+			<!-- <textarea id="fact" name="Facts" cols="30" rows="10"
+				placeholder="Facts"
 				style="resize: none;"
-			></textarea>
+			></textarea> -->
 		</div>
-		<div style="margin: auto;" class="panel minesweeper">
+		<!-- <div style="margin: auto;" class="panel minesweeper"> -->
+		<div class="info-container minesweeper" style="min-width: 40% min-height: max-content">
 			{#if waiting}
 				<p>Waiting clips result...</p>
 			{/if}
-			<div>
+			<div class="board-container">
 				{#if inputBomb}
 					<button on:click={sizeInputModal.open}>Change size</button>
 					<Modal title="Change grid size" bind:this={sizeInputModal}>
-						<input type="number" bind:value={nGrid} on:change={resetGrid} min="4" max="10" style="width: 100%;">
+						<input type="number" bind:value={nGrid} on:change={()=>resetGrid(nGrid)} min="4" max="10" style="width: 100%;">
 					</Modal>
 	
 					<p>Grid size: {nGrid}</p>
@@ -285,10 +310,10 @@
 						</div>
 					</Modal>
 					<button on:click={endBombInput}>End Bomb Input</button>
-				{:else if (gameStatus > 0)}
+				{:else if (gameStatus > ONGOING)}
 					<Modal title="Game Finished" bind:this={gameFinishedModal} isOpen={true} backdropClickable={false}>
 						<div style="display: grid;">
-							<h1>You {gameStatus == 1 ? 'Won' : 'Lost'}!</h1>
+							<h1>You {gameStatus == WIN ? 'Won' : 'Lost'}!</h1>
 							<button on:click={() => {resetGrid(), inputBomb = true, gameFinishedModal.close()}}>Reset</button>
 						</div>
 					</Modal>
@@ -302,7 +327,7 @@
 				{#each curGrid as row, i}
 					{#each row as tile, j}
 						<div
-							class="tile"
+							class="tile {nGrid > 7 ? 'tile-small' : ''}"
 							style="grid-row: {i + 1}; grid-column: {j + 1}"
 							class:revealed={tile.revealed}
 							class:flagged={tile.flagged}
@@ -317,12 +342,17 @@
 				{/each}
 			</div>
 		</div>
-		<div class="euy2" style="margin: auto;">
-			<textarea name="Agenda" id="" cols="30" rows="10"
-				placeholder="R1 euy
-				R2 euy"
-				style="resize: none;"
-			></textarea>
+		<div class="info-container">
+			<h3>Agenda</h3>
+			{#if !inputBomb && !waiting}
+			<ol>
+				{#each agendas as agenda}
+				<li>
+					{agenda}
+				</li>
+				{/each}
+			</ol>
+		{/if}
 		</div>
 	</div>
 </main>

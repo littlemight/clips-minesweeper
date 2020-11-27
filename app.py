@@ -28,9 +28,8 @@ def initSolver():
     nBombs = json['nBombs']
     bombPos = [(v['x'], v['y']) for v in json['bombPos']]
     solver = MinesweeperSolver(nGrid, nBombs, bombPos)
-    print(nGrid, nBombs, bombPos)
     ret = solver.solve()
-    print(ret)
+    # print(ret)
     return jsonify(ret)
 
 if __name__ == "__main__":

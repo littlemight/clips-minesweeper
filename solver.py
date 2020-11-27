@@ -42,7 +42,7 @@ class MinesweeperSolver():
 
             env.define_function(count_bomb)
             env.define_function(count_slot)
-
+            # env.activations()
             rule = """
                 (defrule detect-bomb
                     (index-x $? ?x $?)
@@ -68,6 +68,7 @@ class MinesweeperSolver():
             """
             env.build(rule)
 
+            
             for rule in tuple(env.rules()):
                 rule.watch_firings = True
             
@@ -79,7 +80,6 @@ class MinesweeperSolver():
                 new_fact = template.new_fact()
                 new_fact['x'] = x[0]
                 new_fact['y'] = x[1]
-                new_fact.assertit()
 
             template = env.find_template('empty-slot')
             for i in range(self.board.size):
@@ -101,6 +101,7 @@ class MinesweeperSolver():
                     new_fact['y'] = j
                     new_fact['val'] = self.board.board[i][j]
                     new_fact.assertit()
+                    # print('safe-pos',i,j)
                 
             ret_move = []
             ret_agenda = []
@@ -108,30 +109,32 @@ class MinesweeperSolver():
             try:
                 # Get activations
                 activations = tuple(env.activations())
-                print('Conflict Set')
+                # print('Conflict Set')
                 for act in activations:
                     # print(act)
                     agenda += str(act) + '\n'
-                print(f'Activated Rule: {activations[0]}')
-                stract = str(activations[0])
-                rule_name, facts_id = stract.split(' ')[6:]
-                rule_name = rule_name[:-1]
-                facts_id = facts_id.split(',')
+                # print(f'Activated Rule: {activations[0]}')
+                # stract = str(activations[0])
+                # rule_name, facts_id = stract.split(' ')[6:]
+                # rule_name = rule_name[:-1]
+                # facts_id = facts_id.split(',')
                 # print(rule_name, facts_id)
                 
-                fax = tuple(env.facts())
-                fax = [x for x in fax if f'f-{x.index}' in facts_id]
-                print('LHS:')
-                for f in fax:
+                # fax = tuple(env.facts())
+                # fax = [x for x in fax if f'f-{x.index}' in facts_id]
+                # print('LHS:')
+                # for f in fax:
                     # print(type(f))
-                    print(f'\t{f}')
+                    # print(f'\t{f}')
                     # print(str(f))
-
-                env.run()
                 
+     
+                env.run()
+    
                 for fact in env.facts():
                     strfact = str(fact).replace('(', ' ').replace(')', ' ')
                     words = strfact.split(' ')
+                    # print(strfact)
 
                     bomb = False
                     safe = False
@@ -165,13 +168,13 @@ class MinesweeperSolver():
         # MAIN PROCESS
         ret_move = []
         ret_agenda = []
-        print(f'KONDISI AWAL \n{self.board.to_string()}')
+        # print(f'KONDISI AWAL \n{self.board.to_string()}')
         step = 0
         
         while (len(self.board.bombFound) < self.board.bombCnt and step < 101):
             try:
                 if (step == 0):
-                    ret_move.append(self.board.make_assert(0, 0, 0))
+                    ret_move.append(self.board.make_assert(0, 0, False))
                     ret_agenda.append('initial move: click on (0, 0)')
                 else:
                     progress = find_bomb()
@@ -181,7 +184,7 @@ class MinesweeperSolver():
                     ret_move = ret_move + progress[0]
                     ret_agenda = ret_agenda + progress[1]
                 step += 1
-                print(f'SETELAH STEP {step}\n{self.board.to_string()}')
+                # print(f'SETELAH STEP {step}\n{self.board.to_string()}')
             except Exception as e:
                 print('Error:', e)
                 step += 1
@@ -192,19 +195,29 @@ class MinesweeperSolver():
             print('TIDAK SEMUA BOMB BERHASIL DITEMUKAN.')
         print(f'DISELESAIKAN DALAM: {step} step')
 
-        print(f'Moves\n{ret_move}')
-        return (ret_move, ret_agenda)
+        ret_facts = []
+        for fact in env.facts():
+            strfact = str(fact).replace('(', ' ').replace(')', ' ')
+            ret_facts.append(strfact)
+        # print(f'Moves\n{ret_move}')
+        return (ret_move, ret_agenda,ret_facts)
 
 if __name__ == '__main__':
-    n = int(input())
-    bombCnt = int(input())
-    bombPos = []
-    for i in range(bombCnt):
-        x, y = [int(a) for a in input().split(',')]
-        bombPos.append((x, y))
-
-    solver = MinesweeperSolver(n, bombCnt, bombPos)
-    temp = solver.solve()
+    pass
+    # ==== Kalo mau input manual ====
+    # n = int(input())
+    # bombCnt = int(input())
+    # bombPos = []
+    # for i in range(bombCnt):
+    #     x, y = [int(a) for a in input().split(',')]
+    #     bombPos.append((x, y))
+    
+    # ==== Kalo malas input manual ====
+    # n = 4
+    # bombCnt = 3
+    # bombPos = [(0,3),(1,2),(1, 3)]
+    # solver = MinesweeperSolver(n, bombCnt, bombPos)
+    # temp = solver.solve()
 
     # for i in range(len(temp[0])):
     #     print('Iteration:', i)
