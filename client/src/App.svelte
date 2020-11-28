@@ -257,15 +257,20 @@
 		background: pink;
 	}
 	.info-container{
-		background-color: #fff;
-		border: 1px solid black;
+		
+		border: 5px solid rgb(97, 3, 3);
 		width: 25%;
 		height:100px;
 		min-height: 80%;
 		margin: auto 20px;
+		border-radius : 20px;
+	}
+
+	.container {
+		border-radius: 20px;
 	}
 	.f-container, .a-container {
-		overflow: scroll;
+		overflow: auto;
 		max-width: 25%;
 	}
 
@@ -282,7 +287,9 @@
 	}
 </style>
 
+<h1 style="text-align: center; margin-top:70px; margin-bottom:-30px; color: black">Minesweeper</h1>
 <main style="display: grid; height: 100vh;">
+	
 	<div class="container" style="display: flex; flex-direction: row; justify-content:center">
 		<div class="info-container f-container">
 			<h3>Final Facts</h3>
@@ -304,13 +311,14 @@
 			{/if}
 			<div class="board-container">
 				{#if inputBomb}
-					<button on:click={sizeInputModal.open}>Change size</button>
+					
 					<Modal title="Change grid size" bind:this={sizeInputModal}>
 						<input type="number" bind:value={nGrid} on:change={()=>resetGrid(nGrid)} min="4" max="10" style="width: 100%;">
 					</Modal>
 	
-					<p>Grid size: {nGrid}</p>
-					<p>Bombs: {nBombs}</p>
+					<h2>Grid size: {nGrid}</h2>
+					<p style="margin-top:-5px; margin-bottom: 30px">Bombs: {nBombs}</p>
+					<button on:click={sizeInputModal.open}>Change size</button>
 					<button on:click={textInputModal.open}>Input config by text</button>
 					<Modal title="Input by text" bind:this={textInputModal}>
 						<div style="display: grid;">
