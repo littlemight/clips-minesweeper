@@ -134,7 +134,7 @@ class MinesweeperSolver():
                 for fact in env.facts():
                     strfact = str(fact).replace('(', ' ').replace(')', ' ')
                     words = strfact.split(' ')
-                    # print(strfact)
+                    print(strfact)
 
                     bomb = False
                     safe = False
@@ -213,11 +213,11 @@ if __name__ == '__main__':
     #     bombPos.append((x, y))
     
     # ==== Kalo malas input manual ====
-    # n = 4
-    # bombCnt = 3
-    # bombPos = [(0,3),(1,2),(1, 3)]
-    # solver = MinesweeperSolver(n, bombCnt, bombPos)
-    # temp = solver.solve()
+    n = 4
+    bombCnt = 3
+    bombPos = [(0,3),(1,2),(1, 3)]
+    solver = MinesweeperSolver(n, bombCnt, bombPos)
+    temp = solver.solve()
 
     # for i in range(len(temp[0])):
     #     print('Iteration:', i)
