@@ -16,25 +16,24 @@
 ## File Structure
 ```bash
 |- client
-|- public
-|- index.html
-|- global.css
-|- favicon.png
+    |- public
+        |- index.html
+        |- global.css
+        |- favicon.png
 
-|- script
-| - setupTypeScript.js
-|- src
-|- components
-|- Modal.svelte
-|- Tile.svelte
-|- App.svelte
-|- main.js
-|- .gitignore
-|- README.md
-|- package-lock.json
-|- package.json
-|- rollup.config.js
-|- test
+    |- script
+        | - setupTypeScript.js
+    |- src
+        |- components
+            |- Modal.svelte
+            |- Tile.svelte
+        |- App.svelte
+        |- main.js
+    |- .gitignore
+    |- README.md
+    |- package-lock.json
+    |- package.json
+    |- rollup.config.js
 |- README.md
 |- app.py
 |- board.py
@@ -42,9 +41,8 @@
 |- constant.py
 |- minesweeper.clp
 |- requirements.txt
-|- run.bat
 |- solver.py
-|- trace.bat
+
 ```
 
 - File-file yang terdapat pada folder client adalah file untuk menjalankan frontend 
