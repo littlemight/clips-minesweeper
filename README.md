@@ -6,9 +6,10 @@
 
 ## How to Run
 1. Buka cmd untuk menjalankan Server Python
-2. Ketik python app.py  di folder terluar untuk menjalankan server
+2. Ketik 'python app.py'  di folder terluar untuk menjalankan server
 3. Buka cmd baru untuk menjalankan Client Svelte
 4. Ketik npm install di dalam folder client untuk mendownload dependency dan library yang digunakan 
+5. Masuk ke dalam directory client dengan mengetik 'cd client'
 5. Ketik npm run watch untuk menjalankan frontend 
 6. Buka browser dan localhost:5000
 
