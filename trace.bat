@@ -1,1 +1,0 @@
-python -m trace --trace --ignore-dir=env minesweeper.py < test/example.in
